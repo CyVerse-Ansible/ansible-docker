@@ -31,4 +31,4 @@ BSD
 Author Information
 ------------------
 
-For more information, please contact Edwin Skidmore (edwin@cyerse.org)
+For more information, please contact Edwin Skidmore (edwin@cyverse.org)
