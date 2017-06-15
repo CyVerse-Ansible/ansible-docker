@@ -1,20 +1,20 @@
 ---
 # TODO: check distribution and version and fail if not valid
 
-- name: test the distribution
+- name: fail if not Ubuntu or Centos
   fail: 
     msg: "This role currently only support Ubuntu and CentOS"
   when: ansible_distribution != "Ubuntu" and ansible_distribution != "CentOS"
 
-- name: if Ubuntu, test version
+- name: fail if Ubuntu and not Ubuntu 14+
   fail: 
     msg: "This role currently only support Ubuntu 14+"
   when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int < 14
 
-- name: if CentOS, test version
+- name: fail if CentOS, and not RHEL 7+
   fail: 
     msg: "This role currently only support Centos 6+"
-  when: ansible_distribution == "CentOS" and ansible_distribution_major_version|int < 6
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version|int < 7
 
 # tasks file for ansible-docker
 - name: execute distribution specific tasks

@@ -1,27 +1,22 @@
 ---
 - name: Centos package installation
-  apt:
+  yum:
     name: "{{ item }}"
-    state: present
+    state: latest
     update_cache: yes
   with_items:
     - yum-utils
     - device-mapper-persistent-data
     - lvm2
+    - selinux-policy-targeted
+    - selinux-policy
+    - selinux-policy-base
 
-- name: add the stable docker ce repository
-  command: j
+- name: install the docker ce stable via yum-config-manager
+  command: yum-config-manager -y --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 
-- name: add the docker key
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
-
-- name: force add the stable channel
-  shell: /usr/bin/add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(/usr/bin/lsb_release -cs) stable"
-
-- name: install docker-ce
-  apt:
+- name: install docker and update cache
+  yum:
     name: docker-ce
-    state: present
     update_cache: yes
+    state: present
