@@ -1,7 +1,7 @@
 galaxy_info:
   author: Edwin Skidmore
   description: Ansible role to install docker ce onto support linux systems
-  company: your company (optional)
+  company: CyVerse
 
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
