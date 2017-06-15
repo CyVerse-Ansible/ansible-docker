@@ -9,12 +9,12 @@
 - name: if Ubuntu, test version
   fail: 
     msg: "This role currently only support Ubuntu 14+"
-  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 14
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int < 14
 
 - name: if CentOS, test version
   fail: 
     msg: "This role currently only support Centos 6+"
-  when: ansible_distribution == "CentOS" and ansible_distribution_major_version|int >= 6
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version|int < 6
 
 # tasks file for ansible-docker
 - name: execute distribution specific tasks
