@@ -2,13 +2,40 @@
 - name: Ubuntu package installation
   apt:
     name: "{{ item }}"
-    state: present
+    state: latest
     update_cache: yes
   with_items:
     - apt-transport-https
     - ca-certificates
     - curl
     - software-properties-common
+    - add-apt-key
+
+- name: Ubuntu 14 package installation
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - openssl
+    - python
+    - python-pip
+    - python-dev
+    - build-essential
+    - libssl-dev
+    - libffi-dev
+  when: ansible_distribution_major_version == "14"
+
+- name: install necessary python modules for Ubuntu 14
+  pip:
+    name: "{{ item }}"
+    state: forcereinstall
+  with_items:
+    - ndg-httpsclient
+    - urllib3
+    - pyOpenSSL
+    - pyasn1
+  when: ansible_distribution_major_version == "14"
 
 - name: add the docker key
   apt_key:
