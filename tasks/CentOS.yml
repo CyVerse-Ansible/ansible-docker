@@ -1,0 +1,27 @@
+---
+- name: Centos package installation
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - yum-utils
+    - device-mapper-persistent-data
+    - lvm2
+
+- name: add the stable docker ce repository
+  command: j
+
+- name: add the docker key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: force add the stable channel
+  shell: /usr/bin/add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(/usr/bin/lsb_release -cs) stable"
+
+- name: install docker-ce
+  apt:
+    name: docker-ce
+    state: present
+    update_cache: yes
