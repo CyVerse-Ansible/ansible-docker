@@ -11,7 +11,7 @@ NA
 Role Variables
 --------------
 
-NA
+* ansible_docker_user, if defined, will add the system that user to the docker "group"
 
 Dependencies
 ------------

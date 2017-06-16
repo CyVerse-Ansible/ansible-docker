@@ -19,3 +19,10 @@
 # tasks file for ansible-docker
 - name: execute distribution specific tasks
   include: "{{ ansible_distribution }}.yml"
+
+- name: add user to group, if provided
+  user:
+    name: "{{ ansible_docker_user }}"
+    groups: docker
+    append: yes
+  when: ansible_docker_user is defined
