@@ -8,12 +8,12 @@
 
 - name: fail if Ubuntu and not Ubuntu 14+
   fail: 
-    msg: "This role currently only support Ubuntu 14+"
+    msg: "This role currently only supports Ubuntu 14+"
   when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int < 14
 
 - name: fail if CentOS, and not RHEL 7+
   fail: 
-    msg: "This role currently only support Centos 6+"
+    msg: "This role currently only supports Centos 7+"
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version|int < 7
 
 # tasks file for ansible-docker
