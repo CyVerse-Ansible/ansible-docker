@@ -16,9 +16,62 @@
     msg: "This role currently only supports Centos 7+"
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version|int < 7
 
+- name: load distribution specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+        - "{{ ansible_distribution }}.yml"
+      skip: true
+
 # tasks file for ansible-docker
 - name: execute distribution specific tasks
   include: "{{ ansible_distribution }}.yml"
+
+################################################################ 
+# BLOCK: if a custom data root is defined, then do the following
+################################################################
+- block:
+  - name: create directory, if it doesn't exist
+    file:
+      path: "{{ ansible_docker_data_root }}"
+      state: directory
+      mode: 0711
+
+  - name: stop the docker service
+    systemd:
+      name: docker
+      state: stopped
+
+#  - name: copy files from /var/lib/docker to new data root
+#    synchronize:
+#      src: /var/lib/docker/
+#      dest: "{{ ansible_docker_data_root }}"
+
+  - name: create the docker systemd drop in directory
+    file:
+      path: /etc/systemd/system/docker.service.d/
+      state: directory
+      mode: 0755
+
+  - name: copy the template file
+    template:
+      src: docker.conf.j2
+      dest: /etc/systemd/system/docker.service.d/docker.conf
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: reload systemd daemon
+    systemd:
+      name: docker
+      state: started
+      daemon_reload: yes
+
+  when: ansible_docker_data_root is defined and ansible_docker_data_root != ""
+################################################################ 
+# BLOCK END
+################################################################
 
 - name: add user to group, if provided
   user:
