@@ -1,1 +1,1 @@
-ansible_docker_execstart_base="/usr/bin/dockerd"
+ansible_docker_execstart_base: "/usr/bin/dockerd"
