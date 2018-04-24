@@ -62,16 +62,18 @@
       group: root
       mode: 0644
 
-  - name: reload systemd daemon
-    systemd:
-      name: docker
-      state: started
-      daemon_reload: yes
-
   when: ansible_docker_data_root is defined and ansible_docker_data_root != ""
+
 ################################################################ 
 # BLOCK END
 ################################################################
+
+- name: reload systemd daemon
+  systemd:
+    name: docker
+    state: started
+    daemon_reload: yes
+
 
 - name: add user to group, if provided
   user:
