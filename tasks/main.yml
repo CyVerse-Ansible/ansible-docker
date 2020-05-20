@@ -30,7 +30,7 @@
   with_first_found:
     - files:
         - "docker-install-{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
-        - "docker-install-{{ ansible_distribution }}.yml"
+        - "docker-install-{{ ansible_distribution | replace(' ', '') }}.yml"
       skip: true
 
 ################################################################ 
