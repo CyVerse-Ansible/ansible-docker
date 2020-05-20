@@ -1,10 +1,10 @@
 ---
 # TODO: check distribution and version and fail if not valid
 
-- name: fail if not Ubuntu or Centos
+- name: fail if not Ubuntu, Centos, or Linux Mint
   fail: 
-    msg: "This role currently only support Ubuntu and CentOS"
-  when: ansible_distribution != "Ubuntu" and ansible_distribution != "CentOS"
+    msg: "This role currently only support Ubuntu, Linux Mint, and CentOS"
+  when: ansible_distribution != "Ubuntu" and ansible_distribution != "CentOS" and ansible_distribution != "Linux Mint"
 
 - name: fail if Ubuntu and not Ubuntu 14+
   fail: 
@@ -30,7 +30,7 @@
   with_first_found:
     - files:
         - "docker-install-{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
-        - "docker-install-{{ ansible_distribution }}.yml"
+        - "docker-install-{{ ansible_distribution | replace(' ', '') }}.yml"
       skip: true
 
 ################################################################ 
