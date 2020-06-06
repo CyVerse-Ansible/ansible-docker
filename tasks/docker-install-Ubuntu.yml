@@ -1,52 +1,40 @@
 ---
-- name: Ubuntu package installation
+- name: APT; remove packaged versions
   apt:
-    name: "{{ item }}"
+    name:
+      - docker
+      - docker-engine
+      - docker.io
+      - containerd
+      - runc
+    state: absent
+    update_cache: yes
+
+- name: APT; Ubuntu package installation
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - add-apt-key
+      - gnupg-agent
     state: latest
     update_cache: yes
-  with_items:
-    - apt-transport-https
-    - ca-certificates
-    - curl
-    - software-properties-common
-    - add-apt-key
 
-- name: Ubuntu 14 package installation
-  apt:
-    name: "{{ item }}"
-    state: latest
-    update_cache: yes
-  with_items:
-    - openssl
-    - python
-    - python-pip
-    - python-dev
-    - build-essential
-    - libssl-dev
-    - libffi-dev
-  when: ansible_distribution_major_version == "14"
-
-- name: install necessary python modules for Ubuntu 14
-  pip:
-    name: "{{ item }}"
-    state: forcereinstall
-  with_items:
-    - ndg-httpsclient
-    - urllib3
-    - pyOpenSSL
-    - pyasn1
-  when: ansible_distribution_major_version == "14"
-
-- name: add the docker key
+- name: APT_KEY; add the docker key
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
 
-- name: force add the stable channel
+- name: SHELL; force add the stable channel
   shell: /usr/bin/add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(/usr/bin/lsb_release -cs) stable"
 
 - name: install docker-ce
   apt:
-    name: docker-ce
+    name: 
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
     state: present
     update_cache: yes

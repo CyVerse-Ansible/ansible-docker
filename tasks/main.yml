@@ -1,22 +1,22 @@
 ---
 # TODO: check distribution and version and fail if not valid
 
-- name: fail if not Ubuntu, Centos, or Linux Mint
+- name: FAIL; if not Ubuntu, Centos, or Linux Mint
   fail: 
     msg: "This role currently only support Ubuntu, Linux Mint, and CentOS"
   when: ansible_distribution != "Ubuntu" and ansible_distribution != "CentOS" and ansible_distribution != "Linux Mint"
 
-- name: fail if Ubuntu and not Ubuntu 14+
+- name: FAIL; if Ubuntu and not Ubuntu 16+
   fail: 
-    msg: "This role currently only supports Ubuntu 14+"
-  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int < 14
+    msg: "This role currently only supports Ubuntu 16+"
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int < 16
 
-- name: fail if CentOS, and not RHEL 7+
+- name: FAIL; if CentOS, and not RHEL 7+
   fail: 
     msg: "This role currently only supports Centos 7+"
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version|int < 7
 
-- name: load distribution specific variables
+- name: INCLUDE_VARS; load distribution specific variables
   include_vars: "{{ item }}"
   with_first_found:
     - files:
@@ -25,7 +25,7 @@
       skip: true
 
 # tasks file for ansible-docker
-- name: execute distribution specific tasks
+- name: INCLUDE; execute distribution specific tasks
   include: "{{ item }}"
   with_first_found:
     - files:
@@ -37,29 +37,24 @@
 # BLOCK: if a custom data root is defined, then do the following
 ################################################################
 - block:
-  - name: create directory, if it doesn't exist
+  - name: FILE; create directory, if it doesn't exist
     file:
       path: "{{ ansible_docker_data_root }}"
       state: directory
       mode: 0711
 
-  - name: stop the docker service
+  - name: SYSTEMD; stop the docker service
     systemd:
       name: docker
       state: stopped
 
-#  - name: copy files from /var/lib/docker to new data root
-#    synchronize:
-#      src: /var/lib/docker/
-#      dest: "{{ ansible_docker_data_root }}"
-
-  - name: create the docker systemd drop in directory
+  - name: FILE; create the docker systemd drop in directory
     file:
       path: /etc/systemd/system/docker.service.d/
       state: directory
       mode: 0755
 
-  - name: copy the template file
+  - name: TEMPLATE; copy the template file
     template:
       src: docker.conf.j2
       dest: /etc/systemd/system/docker.service.d/docker.conf
@@ -73,14 +68,14 @@
 # BLOCK END
 ################################################################
 
-- name: reload systemd daemon
+- name: SYSTEMD; reload systemd daemon
   systemd:
     name: docker
     state: started
     daemon_reload: yes
 
 
-- name: add user to group, if provided
+- name: USER; add user to group, if provided
   user:
     name: "{{ ansible_docker_user }}"
     groups: docker
