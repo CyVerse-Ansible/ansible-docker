@@ -1,22 +1,36 @@
 ---
-- name: Centos package installation
+- name: YUM; remove old versions of docker
+  yum:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+  - docker
+  - docker-client
+  - docker-client-latest
+  - docker-common
+  - docker-latest
+  - docker-latest-logrotate
+  - docker-logrotate
+  - docker-engine
+
+- name: YUM; install package dependencies
   yum:
     name: "{{ item }}"
     state: latest
     update_cache: yes
   with_items:
-    - yum-utils
-    - device-mapper-persistent-data
-    - lvm2
-    - selinux-policy-targeted
-    - selinux-policy
-    - selinux-policy-base
+  - yum-utils
+  - device-mapper-persistent-data
+  - lvm2
+  - selinux-policy-targeted
+  - selinux-policy
+  - selinux-policy-base
 
-- name: install the docker ce stable via yum-config-manager
+- name: COMMAND; install the docker ce stable via yum-config-manager
   command: yum-config-manager -y --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 
-- name: install docker and update cache
+- name: YUM; install docker and update cache
   yum:
-    name: docker-ce
-    update_cache: yes
+    name: docker-ce docker-ce-cli containerd.io
     state: present
+    update_cache: yes
