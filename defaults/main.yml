@@ -1,2 +1,6 @@
 ---
 # defaults file for ansible-docker
+
+#Note: this is actually 6 attempts (the original attempt + PACKAGE_RETRIES attempts)
+PACKAGE_RETRIES: 30
+PACKAGE_DELAY: 20
