@@ -1,0 +1,37 @@
+---
+- name: DNF; remove old versions of docker
+  dnf:
+    name:
+    - docker
+    - docker-client
+    - docker-client-latest
+    - docker-common
+    - docker-latest
+    - docker-latest-logrotate
+    - docker-logrotate
+    - docker-engine
+    state: absent
+
+- name: DNF; install package dependencies
+  dnf:
+    name:
+    - yum-utils
+    - device-mapper-persistent-data
+    - lvm2
+    - selinux-policy-targeted
+    - selinux-policy
+    - selinux-policy-base
+    state: latest
+    update_cache: yes
+
+- name: COMMAND; install the docker ce stable via yum-config-manager
+  command: yum-config-manager -y --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+- name: DNF; install docker and update cache
+  dnf:
+    name:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    state: present
+    update_cache: yes

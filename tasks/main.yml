@@ -2,17 +2,17 @@
 # TODO: check distribution and version and fail if not valid
 
 - name: FAIL; if not Ubuntu, Centos, or Linux Mint
-  fail: 
+  fail:
     msg: "This role currently only support Ubuntu, Linux Mint, and CentOS"
-  when: ansible_distribution != "Ubuntu" and ansible_distribution != "CentOS" and ansible_distribution != "Linux Mint"
+  when: ansible_distribution != "Ubuntu" and ansible_distribution != "CentOS" and ansible_distribution != "Linux Mint"  and ansible_distribution != "Rocky"
 
 - name: FAIL; if Ubuntu and not Ubuntu 16+
-  fail: 
+  fail:
     msg: "This role currently only supports Ubuntu 16+"
   when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int < 16
 
 - name: FAIL; if CentOS, and not RHEL 7+
-  fail: 
+  fail:
     msg: "This role currently only supports Centos 7+"
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version|int < 7
 
@@ -33,7 +33,7 @@
         - "docker-install-{{ ansible_distribution | replace(' ', '') }}.yml"
       skip: true
 
-################################################################ 
+################################################################
 # BLOCK: if a custom data root is defined, then do the following
 ################################################################
 - block:
@@ -64,7 +64,7 @@
 
   when: ansible_docker_data_root is defined and ansible_docker_data_root != ""
 
-################################################################ 
+################################################################
 # BLOCK END
 ################################################################
 
