@@ -35,12 +35,14 @@
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
 
-- name: SHELL; force add the stable channel
-  shell: /usr/bin/add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(/usr/bin/lsb_release -cs) stable"
+- name: APT_REPOSITORY; force add the stable channel
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    state: present
 
 - name: install docker-ce
   apt:
-    name: 
+    name:
       - docker-ce
       - docker-ce-cli
       - containerd.io
@@ -50,4 +52,3 @@
   until: result is success
   retries: "{{ PACKAGE_RETRIES }}"
   delay: "{{ PACKAGE_DELAY }}"
-  
