@@ -68,12 +68,15 @@
 # BLOCK END
 ################################################################
 
+- name: PAUSE; wait to prevent "Start request repeated too quickly" error
+  ansible.builtin.pause:
+    seconds: 10
+
 - name: SYSTEMD; reload systemd daemon
   systemd:
     name: docker
     state: started
     daemon_reload: yes
-
 
 - name: USER; add user to group, if provided
   user:
