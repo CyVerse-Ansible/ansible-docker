@@ -21,7 +21,7 @@
       - ca-certificates
       - curl
       - software-properties-common
-      - add-apt-key
+      # - add-apt-key
       - gnupg-agent
     state: latest
     update_cache: yes
