@@ -30,15 +30,41 @@
   retries: "{{ PACKAGE_RETRIES }}"
   delay: "{{ PACKAGE_DELAY }}"
 
+- name: APT; python3 for deb822
+  apt:
+    name:
+      - python3-debian
+    state: latest
+    update_cache: yes
+  register: result
+  until: result is success
+  retries: "{{ PACKAGE_RETRIES }}"
+  delay: "{{ PACKAGE_DELAY }}"
+  when: ansible_distribution_major_version|int > 20 
+
+- name: DEB822_REPO; add docker repo
+  deb822_repository:
+    name: docker 
+    types: [deb]
+    uris: "https://download.docker.com/linux/ubuntu"
+    signed_by: "https://download.docker.com/linux/ubuntu/gpg"
+    suites: ["{{ ansible_distribution_release | lower }}"]
+    components: [stable]
+    state: present
+    enabled: true
+  when: ansible_distribution_major_version|int > 20
+
 - name: APT_KEY; add the docker key
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
+  when: ansible_distribution_major_version|int < 22
 
 - name: APT_REPOSITORY; force add the stable channel
   ansible.builtin.apt_repository:
     repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
     state: present
+  when: ansible_distribution_major_version|int < 22
 
 - name: install docker-ce
   apt:
