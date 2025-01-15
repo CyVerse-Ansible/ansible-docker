@@ -14,31 +14,71 @@
   retries: "{{ PACKAGE_RETRIES }}"
   delay: "{{ PACKAGE_DELAY }}"
 
-- name: APT; Ubuntu package installation
-  apt:
-    name:
-      - apt-transport-https
-      - ca-certificates
-      - curl
-      - software-properties-common
-      - add-apt-key
-      - gnupg-agent
-    state: latest
-    update_cache: yes
-  register: result
-  until: result is success
-  retries: "{{ PACKAGE_RETRIES }}"
-  delay: "{{ PACKAGE_DELAY }}"
+- name: Install prerequisite and add key for Ubuntu <= 22
+  when: ansible_distribution_major_version | int <= 22
+  block:
+    - name: APT; Ubuntu package installation
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - add-apt-key # add-apt-key is removed in Ubuntu 24
+          - gnupg-agent
+        state: latest
+        update_cache: yes
+      register: result
+      until: result is success
+      retries: "{{ PACKAGE_RETRIES }}"
+      delay: "{{ PACKAGE_DELAY }}"
 
-- name: APT_KEY; add the docker key
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
+    - name: APT_KEY; add the docker key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
 
-- name: APT_REPOSITORY; force add the stable channel
-  ansible.builtin.apt_repository:
-    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
-    state: present
+    - name: APT_REPOSITORY; force add the stable channel
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+- name: Install prerequisite and add key for Ubuntu > 22
+  when: ansible_distribution_major_version | int > 22
+  block:
+    - name: APT; Ubuntu package installation
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - gnupg-agent
+        state: latest
+        update_cache: yes
+      register: result
+      until: result is success
+      retries: "{{ PACKAGE_RETRIES }}"
+      delay: "{{ PACKAGE_DELAY }}"
+
+    - name: FILE; directory /etc/apt/keyrings
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: "0755"
+        owner: root
+        group: root
+
+    - name: GET_URL; download repo key to /etc/apt/keyrings/docker.asc
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: "0444"
+
+    - name: APT_REPOSITORY; force add the stable channel
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
 
 - name: install docker-ce
   apt:
